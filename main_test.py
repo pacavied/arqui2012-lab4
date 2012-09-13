@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 import sys
 import webapp2
 import os
@@ -46,12 +45,26 @@ class classTesterNoFunc(unittest.TestCase):
 		self.assertEqual(response.status_int, 200)
 		self.assertEqual(response.headers['Content-Type'], 'application/json')
 
-	def test_postConBD(self):
+	def test_postJSONConBD(self):
 		self.crearBD()
 		request = webapp2.Request.blank('/')
 		request.method = 'POST'
 		request.body = 'msj=prueba'
 		self.assertEqual(request.POST['msj'], 'prueba')
+
+	def test_postNoJSONConBD(self):
+		self.crearBD()
+		request = webapp2.Request.blank('/')
+		request.method = 'POST'
+		request.body = 'pruebaTxt'
+		data = json.loads(self.readFile())
+		data['mensajes'] = str(data['mensajes']) + ', ' + request.body 
+		self.assertEqual(data['mensajes'][-9:], 'pruebaTxt')
+
+	def readFile(self):
+		f = open("datos.json", 'r')
+		temp = f.read()
+		return temp
 
 class classTesterFunc(unittest.TestCase):
 
@@ -71,7 +84,7 @@ class classTesterFunc(unittest.TestCase):
 		self.new = str(self.cwd) + "/datos.json" 
 		shutil.copyfile(self.original, self.new)
 
-	def test_get(self):
+	def test_JSON(self):
 		self.crearBD()
 		request = webapp2.Request.blank('/') # Get inicial
 		response = request.get_response(main.app)
