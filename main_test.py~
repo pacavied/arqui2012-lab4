@@ -16,7 +16,7 @@ else:
 
 import main
 
-class classTester(unittest.TestCase):
+class classTesterNoFunc(unittest.TestCase):
 
 	def setUp(self):
 		self.old_dir = os.path.abspath(os.curdir) # save old directory
@@ -50,11 +50,42 @@ class classTester(unittest.TestCase):
 		self.crearBD()
 		request = webapp2.Request.blank('/')
 		request.method = 'POST'
-		request.body = 'added=prueba'
-		self.assertEqual(request.POST['added'], 'prueba')
+		request.body = 'msj=prueba'
+		self.assertEqual(request.POST['msj'], 'prueba')
 
+class classTesterFunc(unittest.TestCase):
 
-		
+	def setUp(self):
+		self.old_dir = os.path.abspath(os.curdir) # save old directory
+		self.cwd = tempfile.mkdtemp() # new current working directory
+		os.chdir(self.cwd)
+		print self.cwd
+
+	def tearDown(self):
+		os.chdir(self.old_dir)
+		shutil.rmtree(self.cwd)
+
+	#Copia archivo datos.json en directorio temporal, para pruebas con BD.
+	def crearBD(self):
+		self.original = str(self.old_dir) + "/datos.json"
+		self.new = str(self.cwd) + "/datos.json" 
+		shutil.copyfile(self.original, self.new)
+
+	def test_get(self):
+		self.crearBD()
+		request = webapp2.Request.blank('/')
+		response = request.get_response(main.app)
+		request.method = 'POST'
+		request.body = 'msj=prueba'
+		response = request.get_response(main.app)
+		data = json.loads(self.readFile())
+		self.assertEqual(request.POST['msj'], data['added'])
+
+	def readFile(self):
+		f = open("datos.json", 'r')
+		temp = f.read()
+		return temp
+
 
 
 
