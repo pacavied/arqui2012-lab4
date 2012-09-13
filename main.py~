@@ -18,7 +18,7 @@ class Index(webapp2.RequestHandler):
 		data = []
 		data = json.loads(self.readFile())
 		f = open("datos.json", 'w')
-		data['added'] = self.request.POST['msj']
+		data['added'] = self.request.POST['mensajes']
 		f.write(json.dumps(data))
 		self.response.write(json.dumps(data))
 		self.response.headers['Content-Type'] = 'application/json'
