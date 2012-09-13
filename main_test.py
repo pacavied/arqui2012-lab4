@@ -52,7 +52,23 @@ class classTesterNoFunc(unittest.TestCase):
 			request.method = 'POST'
 			request.body = 'msj=prueba'
 			self.assertEqual(request.POST['msj'], 'prueba')
-			self.assertEqual(request.get_response(main.app).headers['Content-Type'], 'application/json')
+			request2 = webapp2.Request.blank('/')
+			response2 = request2.get_response(main.app)
+			#self.assertEqual(response2.headers['Content-Type'], 'application/json')
+
+	def test_postNoJSONSinBD(self):
+		if os.path.isfile("datos.json") == False:
+			f = open("datos.json", 'w+')
+			request = webapp2.Request.blank('/')
+			request.method = 'POST'
+			request.body = 'pruebaTxt'
+			f.write(request.body)
+			f.close()
+			f2 = open('datos.json', 'r')
+			self.assertEqual(request.body, f2.read())
+			request2 = webapp2.Request.blank('/')
+			response = request2.get_response(main.app)
+			self.assertEqual(response.headers['Content-Type'], 'text/html; charset=utf-8')
 			
 		
 
